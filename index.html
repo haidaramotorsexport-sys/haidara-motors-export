@@ -32,7 +32,6 @@ footer{background:#fff}.footergrid{display:grid;grid-template-columns:1.3fr 1fr 
 @media(max-width:950px){.export-gallery{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.export-gallery{grid-template-columns:1fr 1fr}.export-gallery a{height:180px}}
 
-<style>
 .image-lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}
 .image-lightbox.open{display:flex}
 .image-lightbox img{max-width:min(1100px,94vw);max-height:88vh;width:auto;height:auto;object-fit:contain;border-radius:12px;box-shadow:0 20px 70px rgba(0,0,0,.45)}
@@ -42,8 +41,6 @@ footer{background:#fff}.footergrid{display:grid;grid-template-columns:1.3fr 1fr 
 .image-lightbox-next{right:22px;top:50%;transform:translateY(-50%)}
 .gallery-open,.collection a[onclick*="openLightbox"]{cursor:zoom-in}
 @media(max-width:600px){.image-lightbox{padding:14px}.image-lightbox img{max-width:96vw;max-height:82vh;border-radius:8px}.image-lightbox-prev,.image-lightbox-next{width:40px;height:40px;font-size:23px}.image-lightbox-prev{left:10px}.image-lightbox-next{right:10px}.image-lightbox-close{top:10px;right:10px}}
-</style>
-</style>
 </head>
 <body>
 <div class="top"><div class="container"><span>🇮🇩 From Indonesia to Africa &nbsp; | &nbsp; Reliable &nbsp; | &nbsp; Professional &nbsp; | &nbsp; Your Export Partner</span><span>✉ haidaramotors.export@gmail.com &nbsp; | &nbsp; ☎ +62 852-1899-9501</span></div></div>
@@ -126,14 +123,15 @@ footer{background:#fff}.footergrid{display:grid;grid-template-columns:1.3fr 1fr 
 <script>
 (function(){
 let currentIndex=0,items=[];
-function refreshItems(){items=Array.from(document.querySelectorAll('.gallery-open,.collection a[onclick*="openLightbox"]'))}
-window.openLightbox=function(event,el){if(event)event.preventDefault();refreshItems();currentIndex=Math.max(0,items.indexOf(el));showLightbox(currentIndex)}
-function showLightbox(index){if(!items.length)return;currentIndex=(index+items.length)%items.length;const img=items[currentIndex].querySelector('img');if(!img)return;const viewer=document.getElementById('imageLightbox'),big=document.getElementById('lightboxImage');big.src=img.currentSrc||img.src;big.alt=img.alt||'';viewer.classList.add('open');document.body.style.overflow='hidden'}
-window.lightboxPrev=function(){showLightbox(currentIndex-1)}
-window.lightboxNext=function(){showLightbox(currentIndex+1)}
-window.closeLightbox=function(){document.getElementById('imageLightbox').classList.remove('open');document.getElementById('lightboxImage').src='';document.body.style.overflow=''}
-document.addEventListener('keydown',function(e){if(!document.getElementById('imageLightbox').classList.contains('open'))return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lightboxPrev();if(e.key==='ArrowRight')lightboxNext()})
-document.getElementById('imageLightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox()})
+function refreshItems(){items=Array.from(document.querySelectorAll('body img')).filter(img=>img.id!=='lightboxImage' && img.closest('#imageLightbox')===null);}
+function showLightbox(index){refreshItems();if(!items.length)return;currentIndex=(index+items.length)%items.length;const img=items[currentIndex];const viewer=document.getElementById('imageLightbox');const big=document.getElementById('lightboxImage');big.src=img.currentSrc||img.src;big.alt=img.alt||'';viewer.classList.add('open');document.body.style.overflow='hidden';}
+window.openLightbox=function(event,el){if(event)event.preventDefault();refreshItems();const img=el&&el.tagName==='IMG'?el:el&&el.querySelector?el.querySelector('img'):null;const idx=img?items.indexOf(img):-1;showLightbox(idx>=0?idx:0);}
+window.lightboxPrev=function(){showLightbox(currentIndex-1);}
+window.lightboxNext=function(){showLightbox(currentIndex+1);}
+window.closeLightbox=function(){document.getElementById('imageLightbox').classList.remove('open');document.getElementById('lightboxImage').src='';document.body.style.overflow='';}
+document.addEventListener('click',function(e){const img=e.target.closest&&e.target.closest('img');if(!img||img.id==='lightboxImage'||img.closest('#imageLightbox'))return; e.preventDefault();openLightbox(e,img);});
+document.addEventListener('keydown',function(e){if(!document.getElementById('imageLightbox').classList.contains('open'))return;if(e.key==='Escape')closeLightbox();if(e.key==='ArrowLeft')lightboxPrev();if(e.key==='ArrowRight')lightboxNext();});
+document.getElementById('imageLightbox').addEventListener('click',function(e){if(e.target===this)closeLightbox();});
 })();
 </script>
 </body>
